@@ -6,6 +6,7 @@ use App\Http\Requests\ProductRequest;
 use App\Models\Product;
 use App\Repositories\ProductRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class ProductController extends Controller
 {
@@ -29,17 +30,22 @@ class ProductController extends Controller
         return view('pages.product.create');
     }
 
-    public function store(ProductRequest $request)
+    public function store(Request $request)
     {
-        $this->productRepo->store($request);
+        $response = Http::post('http://127.0.0.1:8000/api/product', [
+            'name' => $request->name,
+            'merek' => $request->merek,
+            'min_stock' => $request->min_stock,
+            'price' => $request->price,
+        ]);
 
-        toastr()
-            ->positionClass('toast-bottom-left')
-            ->addSuccess('Produk berhasil ditambah');
-
-        return redirect()->route('master.produk.index');
+        if ($response->successful()) {
+            return redirect()->route('master.produk.index');
+        } else {
+            $error = $response->json()['message']; // Menangkap pesan kesalahan dari response JSON
+            return back()->with('error', $error);
+        }
     }
-
     public function edit($id)
     {
         // return $id;
