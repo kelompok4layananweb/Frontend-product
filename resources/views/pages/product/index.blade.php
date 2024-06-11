@@ -54,7 +54,7 @@
             serverSide: true,
             responsive: true,
             ajax: {
-                url: '{{ route('master.produk.index') }}',
+           url: 'http://localhost:8000/api/product',
                 data: function (d) {
                     // d.company_id = $('#company_id').val();
                 }
